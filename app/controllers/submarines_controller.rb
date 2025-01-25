@@ -2,6 +2,7 @@ class SubmarinesController < ApplicationController
   def index
     @submarines = Submarine.all
 
+    # Price filter
     if params[:price_ranges].present?
       price_ranges = params[:price_ranges]
       if price_ranges.include?('under_1m')
@@ -20,7 +21,7 @@ class SubmarinesController < ApplicationController
     end
 
     if params[:autonomies].present?
-      @submarines = @submarines.where(amenities: params[:autonomies])
+      @submarines = @submarines.where("amenities ILIKE ?", "%#{params[:autonomies]}%")
     end
 
     if params[:search].present?
@@ -39,11 +40,15 @@ class SubmarinesController < ApplicationController
     end
 
     if params[:depth].present?
-      @submarines = @submarines.where('amenities ILIKE ?', "%#{params[:depth]}%")
+      @submarines = @submarines.where(depth: params[:depth])
+    end
+
+    if params[:occupancy].present?
+      @submarines = @submarines.where(occupancy: params[:occupancy])
     end
   end
 
-    def show
+  def show
     @submarine = Submarine.find(params[:id])
   end
 end
